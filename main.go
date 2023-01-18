@@ -161,9 +161,9 @@ func executeCheck(event *corev2.Event) (int, error) {
 		}
 		accumulator += zcard
 
-		time.Sleep(time.Second / 2)
+		// time.Sleep(time.Second / 2)
 	}
-	metrics_ouput := fmt.Sprintf("%s:total %d %d", plugin.RedisKey, accumulator, now.Unix()) // type Graphite format
+	metrics_ouput := fmt.Sprintf("%stotal %d %d", plugin.RedisKey, accumulator, now.Unix()) // type Graphite format
 	fmt.Println(metrics_ouput)
 
 	// log.Println("executing check with --example", plugin.Example)
