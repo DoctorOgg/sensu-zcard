@@ -22,6 +22,7 @@ type Config struct {
 	RedisPort     int
 	RedisDB       int
 	RedisPassword string
+	Mute          bool
 }
 
 var (
@@ -78,6 +79,15 @@ var (
 			Default:   0,
 			Usage:     "The Redis db to connect to",
 			Value:     &plugin.RedisDB,
+		},
+		&sensu.PluginConfigOption[bool]{
+			Path:      "mute",
+			Env:       "MUTE",
+			Argument:  "mute",
+			Shorthand: "m",
+			Default:   false,
+			Usage:     "Mute the check output, and only return total",
+			Value:     &plugin.Mute,
 		},
 	}
 )
@@ -145,9 +155,12 @@ func executeCheck(event *corev2.Event) (int, error) {
 	for _, key := range keys {
 		zcard := getzcard(rdb, ctx, key)
 		//fmt.Printf("%s %d\n", key, zcard)
-		metrics_ouput := fmt.Sprintf("%s %d %d", key, zcard, now.Unix()) // type Graphite format
+		if !plugin.Mute {
+			metrics_ouput := fmt.Sprintf("%s %d %d", key, zcard, now.Unix()) // type Graphite format
+			fmt.Println(metrics_ouput)
+		}
 		accumulator += zcard
-		fmt.Println(metrics_ouput)
+
 		time.Sleep(time.Second)
 	}
 	metrics_ouput := fmt.Sprintf("total %d %d", accumulator, now.Unix()) // type Graphite format
