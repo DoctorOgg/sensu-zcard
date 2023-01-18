@@ -161,7 +161,7 @@ func executeCheck(event *corev2.Event) (int, error) {
 		}
 		accumulator += zcard
 
-		time.Sleep(time.Second)
+		// time.Sleep(time.Second)
 	}
 	metrics_ouput := fmt.Sprintf("total %d %d", accumulator, now.Unix()) // type Graphite format
 	fmt.Println(metrics_ouput)
