@@ -138,15 +138,20 @@ func executeCheck(event *corev2.Event) (int, error) {
 		DB:       plugin.RedisDB,       // use default DB
 	})
 
+	var accumulator int64 = 0
+
 	keys := getRedisKeys(rdb, ctx, plugin.RedisKey)
 	//log.Println("keys", keys)
 	for _, key := range keys {
 		zcard := getzcard(rdb, ctx, key)
 		//fmt.Printf("%s %d\n", key, zcard)
 		metrics_ouput := fmt.Sprintf("%s %d %d", key, zcard, now.Unix()) // type Graphite format
+		accumulator += zcard
 		fmt.Println(metrics_ouput)
-
+		time.Sleep(time.Second)
 	}
+	metrics_ouput := fmt.Sprintf("total" %d %d", accumulator, now.Unix()) // type Graphite format
+
 	// log.Println("executing check with --example", plugin.Example)
 	return sensu.CheckStateOK, nil
 }
